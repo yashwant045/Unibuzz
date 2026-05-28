@@ -1,5 +1,6 @@
 package com.unibuzz.crm.controller;
 
+import com.unibuzz.crm.dto.CreateEventRequest;
 import com.unibuzz.crm.entity.Event;
 import com.unibuzz.crm.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,18 @@ public class EventController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('FACULTY')")
     public ResponseEntity<Event> createEvent(
-            @RequestBody Event event,
+            @RequestBody CreateEventRequest request,
             Authentication authentication
     ) {
         String email = authentication.getName();
+        Event event = Event.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .eventDate(request.getEventDate())
+                .location(request.getLocation())
+                .seats(request.getSeats())
+                .category(request.getCategory())
+                .build();
         return ResponseEntity.ok(eventService.createEvent(event, email));
     }
 

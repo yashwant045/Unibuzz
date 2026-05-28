@@ -12,6 +12,7 @@ import UpcomingEvents from "@/pages/dashboard/UpcomingEvents";
 import Certificates from "@/pages/dashboard/Certificates";
 import EventHistory from "@/pages/dashboard/EventHistory";
 import CreateEvent from "@/pages/faculty/CreateEvent";
+import StudentDashboard from "@/pages/student/StudentDashboard";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -35,11 +36,17 @@ export default function AppRoutes() {
           }
         />
 
+        <Route path="/dashboard/student" element={
+          <ProtectedRoute allowedRoles={["STUDENT"]}>
+            <StudentDashboard />
+          </ProtectedRoute>
+        } />
+
         {/* 🔒 Dashboard Layout */}
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute allowedRoles={["FACULTY"]}>
+            <ProtectedRoute allowedRoles={["FACULTY", "STUDENT"]}>
               <DashboardLayout />
             </ProtectedRoute>
           }

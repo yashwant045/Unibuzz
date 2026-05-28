@@ -5,19 +5,22 @@ function EventCard({ event }) {
   const [showModal, setShowModal] = useState(false);
   const [registrations, setRegistrations] = useState([]);
 
-  // Role check first
-  const token = localStorage.getItem("token");
-  let role = "";
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      role = payload.role;
-    } catch (e) {
-      console.error("Token decode error", e);
+  const { isStudent, isFaculty } = React.useMemo(() => {
+    const token = localStorage.getItem("token");
+    let role = "";
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        role = payload.role;
+      } catch (e) {
+        console.error("Token decode error", e);
+      }
     }
-  }
-  const isStudent = role === "STUDENT";
-  const isFaculty = role === "FACULTY";
+    return {
+      isStudent: role === "STUDENT",
+      isFaculty: role === "FACULTY"
+    };
+  }, []);
 
   // Registration state and logic
   const [myRegistrations, setMyRegistrations] = useState([]);

@@ -3,12 +3,14 @@ import { LogOut } from "lucide-react";
 
 export default function DashboardNavbar() {
   const navigate = useNavigate();
-let userName;
+  let userName = "User";
+  let role = "";
   try {
     const token = localStorage.getItem("token");
     if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
-userName = payload.name || payload.username || payload.sub || 'User';
+      userName = payload.name || payload.username || payload.sub || 'User';
+      role = payload.role;
     }
   } catch {}
 
@@ -25,7 +27,7 @@ userName = payload.name || payload.username || payload.sub || 'User';
       {/* CENTER MENU */}
       <div className="flex gap-8">
         <NavLink 
-          to="/dashboard/profile" 
+          to="/profile" 
           className={({ isActive }) =>
             isActive ? "text-orange-400 font-bold" : "hover:text-orange-400"
           }
@@ -33,14 +35,16 @@ userName = payload.name || payload.username || payload.sub || 'User';
           Profile
         </NavLink>
 
-        <NavLink 
-          to="/dashboard/create-event" 
-          className={({ isActive }) =>
-            isActive ? "text-orange-400 font-bold" : "hover:text-orange-400"
-          }
-        >
-          Create Event
-        </NavLink>
+        {role === 'FACULTY' && (
+          <NavLink 
+            to="/dashboard/create-event" 
+            className={({ isActive }) =>
+              isActive ? "text-orange-400 font-bold" : "hover:text-orange-400"
+            }
+          >
+            Create Event
+          </NavLink>
+        )}
 
         <NavLink 
           to="/dashboard/my-events" 

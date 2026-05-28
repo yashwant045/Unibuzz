@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";
+import API from "@/services/api";
 import { getAllEvents } from "@/services/eventService";
 import EventCard from "@/components/layout/EventCard";
 
@@ -22,7 +22,10 @@ export default function StudentDashboard() {
       const res = await getAllEvents();
       setEvents(res.data);
 
-      const interests = JSON.parse(localStorage.getItem("studentInterests")) || [];
+      // Fetch profile for interests
+      const profileRes = await API.get("/api/user/profile");
+      const interests = profileRes.data.interests || [];
+
       const filtered = res.data.filter(e => 
         interests.some(interest => e.category?.toLowerCase().includes(interest.toLowerCase()))
       );
@@ -34,19 +37,27 @@ export default function StudentDashboard() {
 
       console.log("Registrations:", reg.data);
       console.log("Events:", all.data);
+      const parseDate = (d) => {
+        if (!d) return new Date(0);
+        if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2]);
+        return new Date(d);
+      };
+
       const myEvents = all.data.filter(event =>
-        reg.data.some(r => r.eventId === event.id)
+        reg.data.some(r => String(r.eventId) === String(event.id))
       );
 
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
       const upcomingEvents = myEvents.filter(e =>
-        new Date(e.eventDate) >= today
+        parseDate(e.eventDate) >= today
       );
 
       setJoinedEvents(myEvents);
       setUpcoming(upcomingEvents);
     } catch (err) {
       console.log("ERROR:", err);
+    }
   };
 
   return (

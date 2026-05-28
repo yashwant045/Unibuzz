@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import com.unibuzz.crm.dto.RegistrationResponseDTO;
 
 @RestController
 @RequestMapping("/api/registrations")
@@ -30,8 +32,10 @@ public class RegistrationController {
     }
 
     @GetMapping("/my")
-    public List<Registration> myRegistrations(Authentication auth) {
-        return registrationService.getByStudent(auth.getName());
+    public List<RegistrationResponseDTO> myRegistrations(Authentication auth) {
+        return registrationService.getByStudent(auth.getName()).stream()
+                .map(reg -> RegistrationResponseDTO.builder().eventId(reg.getEventId()).build())
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/event/{eventId}")

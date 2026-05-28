@@ -26,6 +26,15 @@ export default function Navbar() {
             Events
           </Link>
 
+          {token && (
+            <Link
+              to="/dashboard/my-events"
+              className="hover:text-yellow-400 transition"
+            >
+              My Events
+            </Link>
+          )}
+
           {!token ? (
             <Link
               to="/auth"
@@ -34,12 +43,12 @@ export default function Navbar() {
               Login
             </Link>
           ) : (
-            <button
-              onClick={() => navigate("/profile")}
+            <Link
+              to="/profile"
               className="bg-yellow-500 w-10 h-10 rounded-full flex items-center justify-center text-black font-bold hover:bg-yellow-400 transition"
             >
               👤
-            </button>
+            </Link>
           )}
 
         </div>

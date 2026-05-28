@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAllEvents } from "@/services/eventService";
 import EventCard from "@/components/layout/EventCard";
+import { Link } from "react-router-dom";
 
 export default function Events() {
 
@@ -47,9 +48,9 @@ export default function Events() {
             Events
           </a>
 
-          <div className="bg-yellow-400 w-10 h-10 rounded-full flex items-center justify-center text-black font-bold">
+          <Link to="/profile" className="bg-yellow-400 w-10 h-10 rounded-full flex items-center justify-center text-black font-bold hover:bg-yellow-500 transition">
             👤
-          </div>
+          </Link>
 
         </div>
       </nav>
@@ -71,12 +72,7 @@ export default function Events() {
         {filteredEvents.map((event) => (
           <EventCard 
             key={event.id}
-            event={{
-              id: event.id,
-              title: event.title,
-              date: event.eventDate,
-              venue: event.location
-            }}
+            event={event}
           />
         ))}
 

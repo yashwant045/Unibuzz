@@ -6,17 +6,7 @@ export default function Certificates() {
   const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
-
-    const fetchCertificates = async () => {
-
-      const data = await getCertificates();
-
-      setCertificates(data);
-
-    };
-
-    fetchCertificates();
-
+    // getCertificates endpoint not implemented yet
   }, []);
 
   return (
