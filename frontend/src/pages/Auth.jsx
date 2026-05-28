@@ -153,6 +153,7 @@ export default function Auth() {
                   interests={interests}
                   toggleInterest={toggleInterest}
                   InputField={DarkInputField}
+                  onRegisterSuccess={() => setIsLogin(true)}
                 />
               )}
 

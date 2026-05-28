@@ -38,7 +38,7 @@ public class AuthService {
     public String register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            return "Email already exists!";
+            throw new RuntimeException("Email already exists!");
         }
 
         if (request.getRole() == null || request.getRole().isBlank()) {

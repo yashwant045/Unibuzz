@@ -49,6 +49,8 @@ public class JwtUtil {
             extractClaims(token);
             return true;
         } catch (Exception e) {
+            System.err.println("Token validation failed for token: " + token);
+            e.printStackTrace();
             return false;
         }
     }

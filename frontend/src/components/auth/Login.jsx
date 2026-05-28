@@ -6,10 +6,12 @@ export default function Login({ role, InputField, onLoginSuccess }) {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   // handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
 
     try {
 
@@ -22,8 +24,23 @@ export default function Login({ role, InputField, onLoginSuccess }) {
       onLoginSuccess(token);
 
     } catch (error) {
-      console.error(error);
-      alert("Login failed");
+      console.error("Caught login error:", error);
+      let message = "Login failed. Please check your credentials.";
+      
+      if (typeof error === 'string') {
+        message = error;
+      } else if (error?.message) {
+        message = error.message;
+      } else if (error?.error) {
+        message = error.error;
+      }
+      
+      // Prevent HTML responses from bleeding into the UI
+      if (typeof message === 'string' && message.includes('<!DOCTYPE html>')) {
+        message = "Login failed. Invalid credentials or user not found.";
+      }
+      
+      setErrorMsg(message);
     }
   };
 
@@ -48,6 +65,12 @@ export default function Login({ role, InputField, onLoginSuccess }) {
           required
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        {errorMsg && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm font-mono text-center">
+            {typeof errorMsg === 'string' ? errorMsg : "Login failed."}
+          </div>
+        )}
 
         <button
           type="submit"

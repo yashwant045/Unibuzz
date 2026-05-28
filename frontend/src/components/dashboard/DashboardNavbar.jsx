@@ -27,7 +27,7 @@ export default function DashboardNavbar() {
       {/* CENTER MENU */}
       <div className="flex gap-8">
         <NavLink 
-          to="/profile" 
+          to={role === 'FACULTY' ? "/dashboard/faculty" : "/profile"} 
           className={({ isActive }) =>
             isActive ? "text-orange-400 font-bold" : "hover:text-orange-400"
           }

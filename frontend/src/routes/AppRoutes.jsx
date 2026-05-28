@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import Auth from "@/pages/Auth";
 import Events from "@/pages/Events";
-import Profile from "@/pages/Profile";
+import StudentProfile from "@/pages/StudentProfile";
 
 import DashboardLayout from "@/pages/dashboard/DashboardLayout";
 import FacultyProfile from "@/pages/dashboard/FacultyProfile";
@@ -31,7 +31,7 @@ export default function AppRoutes() {
           path="/profile"
           element={
             <ProtectedRoute allowedRoles={["STUDENT", "FACULTY"]}>
-              <Profile />
+              <StudentProfile />
             </ProtectedRoute>
           }
         />

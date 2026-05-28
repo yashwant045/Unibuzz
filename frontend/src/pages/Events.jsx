@@ -1,81 +1,135 @@
 import { useEffect, useState } from "react";
 import { getAllEvents } from "@/services/eventService";
 import EventCard from "@/components/layout/EventCard";
-import { Link } from "react-router-dom";
+import Navbar from "@/components/layout/Navbar";
+import { CalendarDays, Filter, Search, Loader2 } from "lucide-react";
 
 export default function Events() {
 
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadEvents();
   }, []);
 
   const loadEvents = async () => {
+    setIsLoading(true);
     try {
       const res = await getAllEvents();
-      setEvents(res.data);
+
+      const parseDate = (d) => {
+        if (!d) return new Date(0);
+        if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2]);
+        return new Date(d);
+      };
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const upcomingEvents = res.data.filter(event => parseDate(event.eventDate) >= today);
+
+      // Sort from newest to oldest
+      const sortedEvents = upcomingEvents.sort((a, b) => parseDate(b.eventDate) - parseDate(a.eventDate));
+
+      setEvents(sortedEvents);
       
       const interests = JSON.parse(localStorage.getItem("studentInterests")) || [];
-      let filtered = res.data.filter(event => interests.includes(event.category));
+      let filtered = sortedEvents.filter(event => interests.includes(event.category));
       if (filtered.length === 0) {
-        filtered = res.data;
+        filtered = sortedEvents;
       }
       setFilteredEvents(filtered);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50 pb-20">
 
       {/* NAVBAR */}
-      <nav className="bg-slate-700 text-white px-10 py-5 flex justify-between items-center rounded-b-xl shadow-lg">
+      <Navbar />
 
-        <h1 className="text-2xl font-bold">
-          UniBuzz
-        </h1>
-
-        <div className="flex items-center gap-8">
-
-          <a href="/" className="hover:text-yellow-400">
-            Home
-          </a>
-
-          <a href="/events" className="hover:text-yellow-400">
-            Events
-          </a>
-
-          <Link to="/profile" className="bg-yellow-400 w-10 h-10 rounded-full flex items-center justify-center text-black font-bold hover:bg-yellow-500 transition">
-            👤
-          </Link>
-
+      {/* HERO SECTION */}
+      <div className="pt-24 pb-12 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white relative overflow-hidden">
+        {/* Abstract Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20">
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[150%] bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full blur-[120px] transform rotate-12"></div>
+          <div className="absolute top-[20%] -right-[10%] w-[40%] h-[100%] bg-gradient-to-l from-purple-500 to-pink-500 rounded-full blur-[100px] transform -rotate-12"></div>
         </div>
-      </nav>
-
-
-      {/* TITLE */}
-      <div className="text-center mt-10 mb-10">
-
-        <h1 className="text-3xl font-bold">
-          Explore Events
-        </h1>
-
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6 text-sm font-medium text-blue-200">
+            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+            Discover Upcoming Opportunities
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
+            Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Campus Events</span>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+            Register for workshops, seminars, and club activities. Broaden your horizon and connect with your peers.
+          </p>
+        </div>
       </div>
 
+      <div className="max-w-7xl mx-auto px-6 mt-12">
+        {/* FILTERS / Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-indigo-100 text-indigo-600 p-2.5 rounded-lg shadow-sm">
+              <CalendarDays className="h-6 w-6" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Upcoming Events</h2>
+              <p className="text-sm text-gray-500 font-medium">Found {filteredEvents.length} events for you</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Search events..." 
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 w-full md:w-64 shadow-sm text-sm"
+                disabled
+              />
+            </div>
+            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all text-sm font-medium">
+              <Filter className="h-4 w-4" />
+              Filter
+            </button>
+          </div>
+        </div>
 
-      {/* EVENTS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 px-16 pb-20">
-
-        {filteredEvents.map((event) => (
-          <EventCard 
-            key={event.id}
-            event={event}
-          />
-        ))}
-
+        {/* EVENTS GRID */}
+        {isLoading ? (
+          <div className="min-h-[40vh] flex flex-col items-center justify-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
+            <p className="text-gray-500 font-medium animate-pulse">Loading amazing events...</p>
+          </div>
+        ) : filteredEvents.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredEvents.map((event) => (
+              <EventCard 
+                key={event.id}
+                event={event}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+            <div className="bg-gray-100 w-20 h-20 flex items-center justify-center rounded-full mx-auto mb-6">
+              <CalendarDays className="h-10 w-10 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No events found</h3>
+            <p className="text-gray-500 max-w-md mx-auto">There are currently no upcoming events matching your interests. Check back later or adjust your filters.</p>
+          </div>
+        )}
       </div>
 
     </div>

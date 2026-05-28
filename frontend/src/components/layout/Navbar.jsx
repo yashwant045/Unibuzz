@@ -5,6 +5,13 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
+  let role = "";
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      role = payload.role;
+    } catch (e) {}
+  }
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-[#0f1f3d] text-white shadow-md">
@@ -44,7 +51,7 @@ export default function Navbar() {
             </Link>
           ) : (
             <Link
-              to="/profile"
+              to={role === 'FACULTY' ? "/dashboard/faculty" : "/profile"}
               className="bg-yellow-500 w-10 h-10 rounded-full flex items-center justify-center text-black font-bold hover:bg-yellow-400 transition"
             >
               👤

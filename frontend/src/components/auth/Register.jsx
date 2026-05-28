@@ -8,9 +8,11 @@ export default function Register({
   interests,
   toggleInterest,
   InputField,
+  onRegisterSuccess,
 }) {
 
   const [formData, setFormData] = useState({});
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -21,6 +23,7 @@ export default function Register({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
 
     try {
 
@@ -37,12 +40,28 @@ export default function Register({
       }
 
       alert("Registration successful!");
+      
+      if (onRegisterSuccess) {
+        onRegisterSuccess();
+      }
 
     } catch (error) {
-
-      console.error(error);
-      alert("Registration failed");
-
+      console.error("Caught registration error:", error);
+      let message = "Registration failed. Please check your details.";
+      
+      if (typeof error === 'string') {
+        message = error;
+      } else if (error?.message) {
+        message = error.message;
+      } else if (error?.error) {
+        message = error.error;
+      }
+      
+      if (typeof message === 'string' && message.includes('<!DOCTYPE html>')) {
+        message = "Registration failed.";
+      }
+      
+      setErrorMsg(message);
     }
   };
 
@@ -178,6 +197,12 @@ export default function Register({
         )}
 
       </div>
+
+      {errorMsg && (
+        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm font-mono text-center">
+          {typeof errorMsg === 'string' ? errorMsg : "Registration failed."}
+        </div>
+      )}
 
       <button
         type="submit"

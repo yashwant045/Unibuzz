@@ -15,4 +15,6 @@ public class UserProfileDTO {
     private String role;
     private String department;
     private java.util.List<String> interests;
+    private String officeLocation;
+    private String phoneNumber;
 }
