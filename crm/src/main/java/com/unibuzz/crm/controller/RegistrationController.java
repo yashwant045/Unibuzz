@@ -34,12 +34,22 @@ public class RegistrationController {
     @GetMapping("/my")
     public List<RegistrationResponseDTO> myRegistrations(Authentication auth) {
         return registrationService.getByStudent(auth.getName()).stream()
-                .map(reg -> RegistrationResponseDTO.builder().eventId(reg.getEventId()).build())
+                .map(reg -> RegistrationResponseDTO.builder()
+                        .id(reg.getId())
+                        .eventId(reg.getEventId())
+                        .studentEmail(reg.getStudentEmail())
+                        .build())
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/event/{eventId}")
-    public List<Registration> eventRegistrations(@PathVariable Long eventId) {
-        return registrationService.getByEvent(eventId);
+    public List<RegistrationResponseDTO> eventRegistrations(@PathVariable Long eventId) {
+        return registrationService.getByEvent(eventId).stream()
+                .map(reg -> RegistrationResponseDTO.builder()
+                        .id(reg.getId())
+                        .eventId(reg.getEventId())
+                        .studentEmail(reg.getStudentEmail())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

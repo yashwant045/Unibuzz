@@ -44,11 +44,11 @@ export default function MyEvents() {
             });
           } else {
             const data = await getMyEvents();
-            const eventsList = data.data || data;
+            const allEvents = data.data ?? data;
             
             setEvents({ 
-              upcoming: eventsList.filter(e => parseDate(e.eventDate) >= today), 
-              past: eventsList.filter(e => parseDate(e.eventDate) < today) 
+              upcoming: allEvents.filter(e => parseDate(e.eventDate) >= today), 
+              past: allEvents.filter(e => parseDate(e.eventDate) < today) 
             });
           }
       } catch (err) {

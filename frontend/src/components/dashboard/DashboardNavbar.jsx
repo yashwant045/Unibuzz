@@ -35,6 +35,27 @@ export default function DashboardNavbar() {
           Profile
         </NavLink>
 
+        {role === 'STUDENT' && (
+          <>
+            <NavLink 
+              to="/dashboard/student" 
+              className={({ isActive }) =>
+                isActive ? "text-orange-400 font-bold" : "hover:text-orange-400"
+              }
+            >
+              Dashboard
+            </NavLink>
+            <NavLink 
+              to="/dashboard/certificates" 
+              className={({ isActive }) =>
+                isActive ? "text-orange-400 font-bold" : "hover:text-orange-400"
+              }
+            >
+              Certificates
+            </NavLink>
+          </>
+        )}
+
         {role === 'FACULTY' && (
           <NavLink 
             to="/dashboard/create-event" 

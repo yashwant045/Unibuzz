@@ -36,12 +36,6 @@ export default function AppRoutes() {
           }
         />
 
-        <Route path="/dashboard/student" element={
-          <ProtectedRoute allowedRoles={["STUDENT"]}>
-            <StudentDashboard />
-          </ProtectedRoute>
-        } />
-
         {/* 🔒 Dashboard Layout */}
         <Route
           path="/dashboard"
@@ -51,7 +45,11 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         >
-
+          <Route path="student" element={
+            <ProtectedRoute allowedRoles={["STUDENT"]}>
+              <StudentDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="faculty" element={<FacultyProfile />} />
           <Route path="my-events" element={<MyEvents />} />
           <Route path="upcoming" element={<UpcomingEvents />} />

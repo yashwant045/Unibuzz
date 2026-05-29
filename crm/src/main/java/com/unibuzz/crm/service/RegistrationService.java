@@ -24,7 +24,7 @@ public class RegistrationService {
             throw new RuntimeException("Already registered");
         }
 
-        Event event = eventRepository.findById(eventId)
+        Event event = eventRepository.findByIdWithLock(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         int registeredCount = event.getRegisteredCount() == null ? 0 : event.getRegisteredCount();

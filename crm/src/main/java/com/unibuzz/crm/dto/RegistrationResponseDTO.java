@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegistrationResponseDTO {
+    private Long id;
     private Long eventId;
+    private String studentEmail;
 }
