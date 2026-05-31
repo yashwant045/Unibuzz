@@ -19,9 +19,15 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center px-8 py-4">
 
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold tracking-wide">
-          UniBuzz
-        </Link>
+        {role === 'STUDENT' ? (
+          <Link to="/events" className="text-2xl font-bold tracking-wide hover:text-yellow-400 transition">
+            UniBuzz
+          </Link>
+        ) : (
+          <Link to="/" className="text-2xl font-bold tracking-wide hover:text-yellow-400 transition">
+            UniBuzz
+          </Link>
+        )}
 
         {/* Menu */}
         <div className="flex items-center gap-8">

@@ -22,7 +22,13 @@ export default function DashboardNavbar() {
   return (
     <div className="bg-[#0f1f3d] text-white px-8 py-4 flex justify-between items-center shadow">
       {/* LEFT */}
-      <h1 className="text-xl font-bold">UniBuzz</h1>
+      {role === 'STUDENT' ? (
+        <NavLink to="/events" className="text-xl font-bold hover:text-orange-400 transition-colors">
+          UniBuzz
+        </NavLink>
+      ) : (
+        <h1 className="text-xl font-bold">UniBuzz</h1>
+      )}
 
       {/* CENTER MENU */}
       <div className="flex gap-8">

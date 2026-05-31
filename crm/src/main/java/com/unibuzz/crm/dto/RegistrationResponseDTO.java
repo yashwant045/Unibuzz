@@ -13,4 +13,5 @@ public class RegistrationResponseDTO {
     private Long id;
     private Long eventId;
     private String studentEmail;
+    private boolean attended;
 }

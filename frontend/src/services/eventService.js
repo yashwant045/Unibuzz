@@ -27,3 +27,23 @@ export const getMyRegistrations = () => {
 export const getEventRegistrations = (eventId) => {
   return API.get(`/api/registrations/event/${eventId}`);
 };
+
+/**
+ * Downloads a PDF certificate for a given registrationId.
+ * responseType: 'blob' is required to receive binary data correctly.
+ */
+export const downloadCertificate = (registrationId) => {
+  return API.get(`/api/certificates/download/${registrationId}`, {
+    responseType: "blob",
+  });
+};
+
+/**
+ * Faculty marks a student as attended for a specific event.
+ * PUT /api/registrations/{eventId}/attend?studentEmail=...
+ */
+export const markAttended = (eventId, studentEmail) => {
+  return API.put(`/api/registrations/${eventId}/attend`, null, {
+    params: { studentEmail },
+  });
+};

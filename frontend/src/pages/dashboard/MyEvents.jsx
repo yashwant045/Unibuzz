@@ -28,6 +28,10 @@ export default function MyEvents() {
             return new Date(d);
           };
 
+          // Sort descending — most recent date first
+          const sortByMostRecent = (arr) =>
+            [...arr].sort((a, b) => parseDate(b.eventDate) - parseDate(a.eventDate));
+
           const today = new Date();
           today.setHours(0, 0, 0, 0); // compare just the date parts
 
@@ -39,16 +43,16 @@ export default function MyEvents() {
             );
             
             setEvents({ 
-              upcoming: myEvents.filter(e => parseDate(e.eventDate) >= today), 
-              past: myEvents.filter(e => parseDate(e.eventDate) < today) 
+              upcoming: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) >= today)), 
+              past: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) < today)) 
             });
           } else {
             const data = await getMyEvents();
             const allEvents = data.data ?? data;
             
             setEvents({ 
-              upcoming: allEvents.filter(e => parseDate(e.eventDate) >= today), 
-              past: allEvents.filter(e => parseDate(e.eventDate) < today) 
+              upcoming: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) >= today)), 
+              past: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) < today)) 
             });
           }
       } catch (err) {
@@ -94,9 +98,7 @@ export default function MyEvents() {
               {events.past.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {events.past.map((event) => (
-                    <div key={event.id} className="opacity-80">
-                      <EventCard event={event} />
-                    </div>
+                    <EventCard key={event.id} event={event} isPast />
                   ))}
                 </div>
               ) : (

@@ -1,5 +1,6 @@
 package com.unibuzz.crm.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @Table(
         name = "registrations",
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"studentEmail", "eventId"}
+                columnNames = {"student_email", "event_id"}
         )
 )
 @Getter
@@ -30,7 +31,14 @@ public class Registration {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "student_email", nullable = false)
     private String studentEmail;
 
+    @Column(name = "event_id", nullable = false)
     private Long eventId;
+
+    /** Set to true by faculty/admin after the student physically attends the event. */
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean attended = false;
 }

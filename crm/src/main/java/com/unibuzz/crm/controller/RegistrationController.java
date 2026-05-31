@@ -5,11 +5,7 @@ import com.unibuzz.crm.service.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +34,7 @@ public class RegistrationController {
                         .id(reg.getId())
                         .eventId(reg.getEventId())
                         .studentEmail(reg.getStudentEmail())
+                        .attended(reg.isAttended())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -49,7 +46,22 @@ public class RegistrationController {
                         .id(reg.getId())
                         .eventId(reg.getEventId())
                         .studentEmail(reg.getStudentEmail())
+                        .attended(reg.isAttended())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Faculty toggles attendance for a student on an event.
+     * PUT /api/registrations/{eventId}/attend?studentEmail=...
+     * Returns: { "attended": true/false }
+     */
+    @PutMapping("/{eventId}/attend")
+    public ResponseEntity<java.util.Map<String, Boolean>> toggleAttendance(
+            @PathVariable Long eventId,
+            @RequestParam String studentEmail
+    ) {
+        boolean newState = registrationService.toggleAttendance(studentEmail, eventId);
+        return ResponseEntity.ok(java.util.Map.of("attended", newState));
     }
 }

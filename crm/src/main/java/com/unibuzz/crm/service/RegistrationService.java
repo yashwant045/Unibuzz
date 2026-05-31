@@ -51,4 +51,20 @@ public class RegistrationService {
     public List<Registration> getByEvent(Long eventId) {
         return registrationRepository.findByEventId(eventId);
     }
+
+    /** Returns only registrations where attended = true. */
+    public List<Registration> getAttendedByStudent(String email) {
+        return registrationRepository.findByStudentEmailAndAttendedTrue(email);
+    }
+
+    /** Toggles the attended flag for a student on a given event. */
+    @Transactional
+    public boolean toggleAttendance(String studentEmail, Long eventId) {
+        Registration reg = registrationRepository
+                .findByStudentEmailAndEventId(studentEmail, eventId)
+                .orElseThrow(() -> new RuntimeException("Registration not found"));
+        reg.setAttended(!reg.isAttended());
+        registrationRepository.save(reg);
+        return reg.isAttended();
+    }
 }

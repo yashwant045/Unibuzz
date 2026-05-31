@@ -20,7 +20,16 @@ export default function StudentDashboard() {
     try {
       // Load all events and recommended first
       const res = await getAllEvents();
-      setEvents(res.data);
+
+      const parseDate = (d) => {
+        if (!d) return new Date(0);
+        if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2]);
+        return new Date(d);
+      };
+      const sortByMostRecent = (arr) =>
+        [...arr].sort((a, b) => parseDate(b.eventDate) - parseDate(a.eventDate));
+
+      setEvents(sortByMostRecent(res.data));
 
       // Fetch profile for interests
       const profileRes = await API.get("/api/user/profile");
@@ -29,7 +38,7 @@ export default function StudentDashboard() {
       const filtered = res.data.filter(e => 
         interests.some(interest => e.category?.toLowerCase().includes(interest.toLowerCase()))
       );
-      setRecommended(filtered);
+      setRecommended(sortByMostRecent(filtered));
 
       // Load joined/upcoming
       const reg = await API.get("/api/registrations/my");
@@ -37,11 +46,6 @@ export default function StudentDashboard() {
 
       console.log("Registrations:", reg.data);
       console.log("Events:", all.data);
-      const parseDate = (d) => {
-        if (!d) return new Date(0);
-        if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2]);
-        return new Date(d);
-      };
 
       const myEvents = all.data.filter(event =>
         reg.data.some(r => String(r.eventId) === String(event.id))
@@ -53,8 +57,8 @@ export default function StudentDashboard() {
         parseDate(e.eventDate) >= today
       );
 
-      setJoinedEvents(myEvents);
-      setUpcoming(upcomingEvents);
+      setJoinedEvents(sortByMostRecent(myEvents));
+      setUpcoming(sortByMostRecent(upcomingEvents));
     } catch (err) {
       console.log("ERROR:", err);
     }
