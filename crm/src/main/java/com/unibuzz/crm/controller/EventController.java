@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,5 +61,22 @@ public class EventController {
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted");
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('FACULTY')")
+    public ResponseEntity<Event> updateEvent(
+            @PathVariable Long id,
+            @RequestBody CreateEventRequest request
+    ) {
+        Event event = Event.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .eventDate(request.getEventDate())
+                .location(request.getLocation())
+                .seats(request.getSeats())
+                .category(request.getCategory())
+                .build();
+        return ResponseEntity.ok(eventService.updateEvent(id, event));
     }
 }

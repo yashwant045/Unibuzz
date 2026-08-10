@@ -14,4 +14,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @org.springframework.data.jpa.repository.Query("SELECT e FROM Event e WHERE e.id = :id")
     java.util.Optional<Event> findByIdWithLock(@org.springframework.data.repository.query.Param("id") Long id);
+
+    List<Event> findByEventDate(java.time.LocalDate eventDate);
 }
