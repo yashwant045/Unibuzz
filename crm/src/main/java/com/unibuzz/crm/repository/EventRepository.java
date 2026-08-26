@@ -16,4 +16,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     java.util.Optional<Event> findByIdWithLock(@org.springframework.data.repository.query.Param("id") Long id);
 
     List<Event> findByEventDate(java.time.LocalDate eventDate);
+
+    List<Event> findByEventDateBefore(java.time.LocalDate date);
 }

@@ -15,6 +15,7 @@ public class CreateEventRequest {
     private String title;
     private String description;
     private LocalDate eventDate;
+    private String eventTime;
     private String location;
     private Integer seats;
     private String category;

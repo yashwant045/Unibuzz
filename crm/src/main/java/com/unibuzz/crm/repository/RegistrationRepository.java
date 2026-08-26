@@ -21,4 +21,6 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
 
     /** Used for mark-attendance lookups. */
     Optional<Registration> findByStudentEmailAndEventId(String email, Long eventId);
+
+    void deleteByEventId(Long eventId);
 }

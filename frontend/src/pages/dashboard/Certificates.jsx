@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Award, Download, CalendarDays, MapPin, Loader2, Trophy, AlertCircle } from "lucide-react";
 import { getMyRegistrations, getAllEvents, downloadCertificate } from "@/services/eventService";
+import { useToast } from "@/context/ToastContext";
 
 export default function Certificates() {
+  const toast = useToast();
   const [attendedEvents, setAttendedEvents] = useState([]);   // [{reg, event}]
   const [isLoading, setIsLoading]           = useState(true);
   const [error, setError]                   = useState("");
@@ -60,9 +62,10 @@ export default function Certificates() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+      toast.success("Certificate downloaded successfully!");
     } catch (err) {
       console.error(err);
-      alert("Download failed. Please try again.");
+      toast.error("Download failed. Please try again.");
     } finally {
       setDownloading(null);
     }

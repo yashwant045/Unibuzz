@@ -32,6 +32,8 @@ public class Event {
 
     private LocalDate eventDate;
 
+    private String eventTime;
+
     private String location;
 
     private Integer seats;
@@ -42,4 +44,7 @@ public class Event {
     private String facultyEmail; // who created it
 
     private String category;
+
+    @jakarta.persistence.Version
+    private Long version;
 }

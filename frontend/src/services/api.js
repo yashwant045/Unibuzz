@@ -20,9 +20,11 @@ API.interceptors.response.use(
     if (error.response?.status === 401) {
       // Don't trigger session expired for login failures
       if (error.config.url !== "/auth/login") {
-        alert("Your session expired, please log in again.");
-        localStorage.removeItem("token");
-        window.location.href = "/auth";
+        const token = localStorage.getItem("token");
+        if (token) {
+          localStorage.removeItem("token");
+          window.location.href = "/auth";
+        }
       }
     }
     return Promise.reject(error);

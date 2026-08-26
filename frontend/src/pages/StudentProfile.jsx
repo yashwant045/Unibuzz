@@ -17,9 +17,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
-import API from "@/services/api";
+import { useToast } from "@/context/ToastContext";
 
 export default function StudentProfile() {
+  const toast = useToast();
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState({ joined: [], upcoming: [], past: [] });
   const [isLoading, setIsLoading] = useState(true);
@@ -104,9 +105,10 @@ export default function StudentProfile() {
       setUser(userData);
       localStorage.setItem("studentInterests", JSON.stringify(interestsArray));
       setIsEditing(false);
+      toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile", err);
-      alert("Failed to update profile. " + (err.response?.data?.message || err.message));
+      toast.error("Failed to update profile. " + (err.response?.data?.message || err.message));
     } finally {
       setIsSaving(false);
     }

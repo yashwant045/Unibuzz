@@ -36,6 +36,7 @@ public class EventController {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .eventDate(request.getEventDate())
+                .eventTime(request.getEventTime())
                 .location(request.getLocation())
                 .seats(request.getSeats())
                 .category(request.getCategory())
@@ -57,7 +58,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('FACULTY')")
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted");
@@ -73,6 +74,7 @@ public class EventController {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .eventDate(request.getEventDate())
+                .eventTime(request.getEventTime())
                 .location(request.getLocation())
                 .seats(request.getSeats())
                 .category(request.getCategory())

@@ -16,6 +16,10 @@ export const deleteEvent = (id) => {
   return API.delete(`/api/events/${id}`);
 };
 
+export const updateEvent = (id, data) => {
+  return API.put(`/api/events/${id}`, data);
+};
+
 export const registerEvent = (eventId) => {
   return API.post(`/api/registrations/${eventId}`);
 };

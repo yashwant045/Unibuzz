@@ -21,7 +21,7 @@ public class RegistrationService {
     public void register(String email, Long eventId) {
         boolean exists = registrationRepository.existsByStudentEmailAndEventId(email, eventId);
         if (exists) {
-            throw new RuntimeException("Already registered");
+            throw new RuntimeException("You are already registered for this event.");
         }
 
         Event event = eventRepository.findByIdWithLock(eventId)
@@ -30,7 +30,7 @@ public class RegistrationService {
         int registeredCount = event.getRegisteredCount() == null ? 0 : event.getRegisteredCount();
         int seats = event.getSeats() == null ? 0 : event.getSeats();
         if (registeredCount >= seats) {
-            throw new RuntimeException("Seats Full");
+            throw new RuntimeException("Event is fully booked! No seats available.");
         }
 
         Registration reg = Registration.builder()

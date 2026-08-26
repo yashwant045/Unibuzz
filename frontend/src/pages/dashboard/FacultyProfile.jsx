@@ -18,8 +18,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getMyEvents } from "@/services/eventService";
 import API from "@/services/api";
+import { useToast } from "@/context/ToastContext";
 
 export default function FacultyProfile() {
+  const toast = useToast();
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -66,9 +68,10 @@ export default function FacultyProfile() {
       const res = await API.put("/api/user/profile", formData);
       setUser(res.data);
       setIsEditing(false);
+      toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile", err);
-      alert("Failed to update profile. " + (err.response?.data?.message || err.message));
+      toast.error("Failed to update profile. " + (err.response?.data?.message || err.message));
     } finally {
       setIsSaving(false);
     }

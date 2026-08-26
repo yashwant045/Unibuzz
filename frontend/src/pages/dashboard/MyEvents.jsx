@@ -18,49 +18,50 @@ export default function MyEvents() {
   });
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadEvents = async () => {
+    setIsLoading(true);
+    try {
+        const parseDate = (d) => {
+          if (!d) return new Date(0);
+          if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2]);
+          return new Date(d);
+        };
+
+        // Sort descending — most recent date first
+        const sortByMostRecent = (arr) =>
+          [...arr].sort((a, b) => parseDate(b.eventDate) - parseDate(a.eventDate));
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // compare just the date parts
+
+        if (role === "STUDENT") {
+          const regRes = await getMyRegistrations();
+          const allRes = await getAllEvents();
+          const myEvents = allRes.data.filter(e => 
+            regRes.data.some(r => String(r.eventId) === String(e.id))
+          );
+          
+          setEvents({ 
+            upcoming: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) >= today)), 
+            past: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) < today)) 
+          });
+        } else {
+          const data = await getMyEvents();
+          const allEvents = data.data ?? data;
+          
+          setEvents({ 
+            upcoming: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) >= today)), 
+            past: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) < today)) 
+          });
+        }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadEvents = async () => {
-      setIsLoading(true);
-      try {
-          const parseDate = (d) => {
-            if (!d) return new Date(0);
-            if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2]);
-            return new Date(d);
-          };
-
-          // Sort descending — most recent date first
-          const sortByMostRecent = (arr) =>
-            [...arr].sort((a, b) => parseDate(b.eventDate) - parseDate(a.eventDate));
-
-          const today = new Date();
-          today.setHours(0, 0, 0, 0); // compare just the date parts
-
-          if (role === "STUDENT") {
-            const regRes = await getMyRegistrations();
-            const allRes = await getAllEvents();
-            const myEvents = allRes.data.filter(e => 
-              regRes.data.some(r => String(r.eventId) === String(e.id))
-            );
-            
-            setEvents({ 
-              upcoming: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) >= today)), 
-              past: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) < today)) 
-            });
-          } else {
-            const data = await getMyEvents();
-            const allEvents = data.data ?? data;
-            
-            setEvents({ 
-              upcoming: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) >= today)), 
-              past: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) < today)) 
-            });
-          }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     if (role !== "GUEST") loadEvents();
   }, [role]);
 
@@ -86,7 +87,7 @@ export default function MyEvents() {
               {events.upcoming.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {events.upcoming.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event.id} event={event} onEventUpdated={loadEvents} />
                   ))}
                 </div>
               ) : (
@@ -98,7 +99,7 @@ export default function MyEvents() {
               {events.past.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {events.past.map((event) => (
-                    <EventCard key={event.id} event={event} isPast />
+                    <EventCard key={event.id} event={event} isPast onEventUpdated={loadEvents} />
                   ))}
                 </div>
               ) : (
