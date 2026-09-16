@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyEvents, getMyRegistrations, getAllEvents } from "@/services/eventService";
+import { getMyEvents, getMyRegistrations, getAllEvents, isEventExpired } from "@/services/eventService";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import EventCard from "@/components/layout/EventCard";
 
@@ -31,9 +31,6 @@ export default function MyEvents() {
         const sortByMostRecent = (arr) =>
           [...arr].sort((a, b) => parseDate(b.eventDate) - parseDate(a.eventDate));
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // compare just the date parts
-
         if (role === "STUDENT") {
           const regRes = await getMyRegistrations();
           const allRes = await getAllEvents();
@@ -42,16 +39,16 @@ export default function MyEvents() {
           );
           
           setEvents({ 
-            upcoming: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) >= today)), 
-            past: sortByMostRecent(myEvents.filter(e => parseDate(e.eventDate) < today)) 
+            upcoming: sortByMostRecent(myEvents.filter(e => !isEventExpired(e))), 
+            past: sortByMostRecent(myEvents.filter(e => isEventExpired(e))) 
           });
         } else {
           const data = await getMyEvents();
           const allEvents = data.data ?? data;
           
           setEvents({ 
-            upcoming: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) >= today)), 
-            past: sortByMostRecent(allEvents.filter(e => parseDate(e.eventDate) < today)) 
+            upcoming: sortByMostRecent(allEvents.filter(e => !isEventExpired(e))), 
+            past: sortByMostRecent(allEvents.filter(e => isEventExpired(e))) 
           });
         }
     } catch (err) {

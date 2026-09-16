@@ -22,21 +22,13 @@ public class EventReminderScheduler {
     private final EventRepository eventRepository;
     private final RegistrationRepository registrationRepository;
     private final EmailService emailService;
+    private final EventService eventService;
 
-    // Run every day at midnight to clean up expired events
-    @Scheduled(cron = "0 0 0 * * *")
+    // Run every 60 seconds to continuously clean up expired events
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void cleanupExpiredEvents() {
-        log.info("Starting daily expired event cleanup job");
-        LocalDate today = LocalDate.now();
-        List<Event> expiredEvents = eventRepository.findByEventDateBefore(today);
-        if (!expiredEvents.isEmpty()) {
-            for (Event event : expiredEvents) {
-                registrationRepository.deleteByEventId(event.getId());
-                eventRepository.delete(event);
-            }
-            log.info("Deleted {} expired events and their registrations.", expiredEvents.size());
-        }
+        eventService.cleanupExpiredEvents();
     }
 
     // Run every day at 9:00 AM

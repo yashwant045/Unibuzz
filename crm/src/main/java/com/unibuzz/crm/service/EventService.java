@@ -18,16 +18,39 @@ public class EventService {
     private final com.unibuzz.crm.repository.UserRepository userRepository;
     private final com.unibuzz.crm.repository.RegistrationRepository registrationRepository;
 
+    public boolean isEventExpired(Event event) {
+        if (event == null || event.getEventDate() == null) return false;
+        LocalDate today = LocalDate.now();
+        if (event.getEventDate().isBefore(today)) return true;
+        if (event.getEventDate().isEqual(today) && event.getEventTime() != null && !event.getEventTime().isBlank()) {
+            try {
+                String timeStr = event.getEventTime().trim().toUpperCase();
+                int hour = 0;
+                int minute = 0;
+                if (timeStr.contains("AM") || timeStr.contains("PM")) {
+                    boolean isPm = timeStr.contains("PM");
+                    String clean = timeStr.replace("AM", "").replace("PM", "").trim();
+                    String[] parts = clean.split(":");
+                    hour = Integer.parseInt(parts[0].trim());
+                    minute = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 0;
+                    if (isPm && hour < 12) hour += 12;
+                    if (!isPm && hour == 12) hour = 0;
+                } else {
+                    String[] parts = timeStr.split(":");
+                    hour = Integer.parseInt(parts[0].trim());
+                    minute = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 0;
+                }
+                java.time.LocalTime eventTime = java.time.LocalTime.of(hour, minute);
+                return java.time.LocalTime.now().isAfter(eventTime);
+            } catch (Exception ignored) {}
+        }
+        return false;
+    }
+
     @Transactional
     public void cleanupExpiredEvents() {
-        LocalDate today = LocalDate.now();
-        List<Event> expiredEvents = eventRepository.findByEventDateBefore(today);
-        if (!expiredEvents.isEmpty()) {
-            for (Event event : expiredEvents) {
-                registrationRepository.deleteByEventId(event.getId());
-                eventRepository.delete(event);
-            }
-        }
+        // Events and registrations are preserved in DB for attendance and certificate history.
+        // Active vs past filtering is dynamically determined by isEventExpired.
     }
 
     private String formatTime12Hour(String timeStr) {

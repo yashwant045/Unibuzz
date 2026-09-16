@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "@/services/api";
-import { getAllEvents } from "@/services/eventService";
+import { getAllEvents, isEventExpired } from "@/services/eventService";
 import EventCard from "@/components/layout/EventCard";
 
 export default function StudentDashboard() {
@@ -13,7 +13,7 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     console.log("Dashboard loaded");
-    loadData(); // ✅ THIS IS MISSING
+    loadData();
   }, []);
 
   const loadData = async () => {
@@ -29,13 +29,14 @@ export default function StudentDashboard() {
       const sortByMostRecent = (arr) =>
         [...arr].sort((a, b) => parseDate(b.eventDate) - parseDate(a.eventDate));
 
-      setEvents(sortByMostRecent(res.data));
+      const activeEvents = res.data.filter(e => !isEventExpired(e));
+      setEvents(sortByMostRecent(activeEvents));
 
       // Fetch profile for interests
       const profileRes = await API.get("/api/user/profile");
       const interests = profileRes.data.interests || [];
 
-      const filtered = res.data.filter(e => 
+      const filtered = activeEvents.filter(e => 
         interests.some(interest => e.category?.toLowerCase().includes(interest.toLowerCase()))
       );
       setRecommended(sortByMostRecent(filtered));
@@ -44,18 +45,11 @@ export default function StudentDashboard() {
       const reg = await API.get("/api/registrations/my");
       const all = await getAllEvents();
 
-      console.log("Registrations:", reg.data);
-      console.log("Events:", all.data);
-
       const myEvents = all.data.filter(event =>
         reg.data.some(r => String(r.eventId) === String(event.id))
       );
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const upcomingEvents = myEvents.filter(e =>
-        parseDate(e.eventDate) >= today
-      );
+      const upcomingEvents = myEvents.filter(e => !isEventExpired(e));
 
       setJoinedEvents(sortByMostRecent(myEvents));
       setUpcoming(sortByMostRecent(upcomingEvents));

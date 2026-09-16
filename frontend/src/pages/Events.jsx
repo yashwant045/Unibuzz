@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllEvents } from "@/services/eventService";
+import { getAllEvents, isEventExpired } from "@/services/eventService";
 import EventCard from "@/components/layout/EventCard";
 import Navbar from "@/components/layout/Navbar";
 import { CalendarDays, Filter, Search, Loader2, Sparkles, Compass } from "lucide-react";
@@ -25,13 +25,10 @@ export default function Events() {
         return new Date(d);
       };
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const upcomingEvents = res.data.filter(event => parseDate(event.eventDate) >= today);
+      const activeEvents = res.data.filter(event => !isEventExpired(event));
 
       // Sort from newest to oldest
-      const sortedEvents = upcomingEvents.sort((a, b) => parseDate(a.eventDate) - parseDate(b.eventDate));
+      const sortedEvents = activeEvents.sort((a, b) => parseDate(a.eventDate) - parseDate(b.eventDate));
       setAllEvents(sortedEvents);
       
       // Recommendation Logic

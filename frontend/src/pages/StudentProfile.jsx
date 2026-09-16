@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
 import { useToast } from "@/context/ToastContext";
+import { isEventExpired } from "@/services/eventService";
 
 export default function StudentProfile() {
   const toast = useToast();
@@ -49,26 +50,19 @@ export default function StudentProfile() {
       userData.role = userData.roles?.[0]?.name || userData.role || "STUDENT";
       setUser(userData);
 
-      const parseDate = (d) => {
-        if (!d) return new Date(0);
-        if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2]);
-        return new Date(d);
-      };
-
       const myEvents = allRes.data.filter(event =>
         regRes.data.some(r => String(r.eventId) === String(event.id))
       );
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const upcoming = myEvents.filter(e => parseDate(e.eventDate) >= today);
-      const past = myEvents.filter(e => parseDate(e.eventDate) < today);
+      const upcoming = myEvents.filter(e => !isEventExpired(e));
+      const past = myEvents.filter(e => isEventExpired(e));
+      const attendedCount = regRes.data.filter(r => r.attended).length;
 
       setEvents({
         joined: myEvents,
         upcoming,
-        past
+        past,
+        certificatesCount: attendedCount
       });
     } catch (error) {
       console.error("Profile fetch failed", error);
@@ -251,7 +245,7 @@ export default function StudentProfile() {
                     <Trophy className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-gray-900">0</h3>
+                    <h3 className="text-3xl font-bold text-gray-900">{events.certificatesCount || 0}</h3>
                     <p className="text-sm font-medium text-gray-500">Certificates Earned</p>
                   </div>
                 </CardContent>

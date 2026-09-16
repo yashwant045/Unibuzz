@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getMyEvents } from "@/services/eventService";
+import { getMyEvents, isEventExpired } from "@/services/eventService";
 import API from "@/services/api";
 import { useToast } from "@/context/ToastContext";
 
@@ -220,12 +220,7 @@ export default function FacultyProfile() {
               ) : (
                 <div className="space-y-4">
                   {recentEvents.map(event => {
-                    const eventDateObj = new Date(
-                      Array.isArray(event.eventDate) 
-                        ? new Date(event.eventDate[0], event.eventDate[1] - 1, event.eventDate[2])
-                        : event.eventDate
-                    );
-                    const isCompleted = eventDateObj < today;
+                    const isCompleted = isEventExpired(event);
 
                     return (
                       <div key={event.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-blue-200 transition-colors gap-4">
