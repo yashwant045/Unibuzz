@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createEvent } from "@/services/eventService";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
@@ -13,14 +13,28 @@ export default function CreateEvent() {
     title: "",
     description: "",
     eventDate: "",
-    eventTime: "",
+    eventTime: "12:00", // Default to 12:00
     location: "",
     category: "",
     seats: ""
   });
 
+  const [timeData, setTimeData] = useState({ hour: "12", minute: "00", ampm: "PM" });
+
+  useEffect(() => {
+    let h = parseInt(timeData.hour, 10);
+    if (timeData.ampm === "PM" && h !== 12) h += 12;
+    if (timeData.ampm === "AM" && h === 12) h = 0;
+    const hStr = h.toString().padStart(2, '0');
+    setForm(prev => ({ ...prev, eventTime: `${hStr}:${timeData.minute}` }));
+  }, [timeData]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleTimeChange = (e) => {
+    setTimeData({ ...timeData, [e.target.name]: e.target.value });
   };
 
   const todayStr = new Date().toISOString().split("T")[0];
@@ -68,7 +82,7 @@ export default function CreateEvent() {
           placeholder="Title" 
           value={form.title}
           onChange={handleChange} 
-          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
           required
         />
 
@@ -77,7 +91,7 @@ export default function CreateEvent() {
           placeholder="Description" 
           value={form.description}
           onChange={handleChange} 
-          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent h-32" 
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent h-32" 
           required
         />
 
@@ -90,20 +104,44 @@ export default function CreateEvent() {
               min={todayStr}
               value={form.eventDate}
               onChange={handleChange} 
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
               required
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">Event Time</label>
-            <input 
-              type="time" 
-              name="eventTime" 
-              value={form.eventTime}
-              onChange={handleChange} 
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
-              required
-            />
+            <div className="flex gap-2">
+              <select 
+                name="hour"
+                value={timeData.hour}
+                onChange={handleTimeChange}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+              >
+                {[...Array(12)].map((_, i) => {
+                  const val = (i + 1).toString().padStart(2, '0');
+                  return <option key={val} value={val}>{val}</option>;
+                })}
+              </select>
+              <select 
+                name="minute"
+                value={timeData.minute}
+                onChange={handleTimeChange}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+              >
+                {["00", "15", "30", "45"].map(val => (
+                  <option key={val} value={val}>{val}</option>
+                ))}
+              </select>
+              <select 
+                name="ampm"
+                value={timeData.ampm}
+                onChange={handleTimeChange}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+              >
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -112,16 +150,16 @@ export default function CreateEvent() {
           placeholder="Location" 
           value={form.location}
           onChange={handleChange} 
-          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
           required
         />
 
         <input 
           name="category" 
-          placeholder="Category (AI, Web, etc)" 
+          placeholder="Category (Workshop, Seminar, etc)" 
           value={form.category}
           onChange={handleChange} 
-          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
           required
         />
 
@@ -132,13 +170,13 @@ export default function CreateEvent() {
           value={form.seats}
           onChange={handleChange} 
           min="1"
-          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
           required
         />
 
         <button 
           disabled={isSubmitting}
-          className="bg-orange-600 hover:bg-orange-700 text-white w-full py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-md"
         >
           {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
           {isSubmitting ? "Creating Event..." : "Create Event"}

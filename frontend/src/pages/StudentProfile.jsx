@@ -10,7 +10,8 @@ import {
   CalendarDays,
   CheckCircle2,
   MapPin,
-  Loader2
+  Loader2,
+  Clock
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -139,6 +140,17 @@ export default function StudentProfile() {
 
   const today = new Date();
   today.setHours(0,0,0,0);
+
+  const formatTimeAMPM = (timeStr) => {
+    if (!timeStr) return "";
+    if (timeStr.toUpperCase().includes("AM") || timeStr.toUpperCase().includes("PM")) return timeStr;
+    const [hourStr, minuteStr] = timeStr.split(":");
+    if (!hourStr || !minuteStr) return timeStr;
+    let hour = parseInt(hourStr, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return `${hour}:${minuteStr} ${ampm}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
@@ -295,6 +307,12 @@ export default function StudentProfile() {
                                   <Calendar className="h-3 w-3" />
                                   {Array.isArray(event.eventDate) ? `${event.eventDate[0]}-${String(event.eventDate[1]).padStart(2, '0')}-${String(event.eventDate[2]).padStart(2, '0')}` : event.eventDate}
                                 </span>
+                                {event.eventTime && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {formatTimeAMPM(event.eventTime)}
+                                  </span>
+                                )}
                                 <span className="flex items-center gap-1">
                                   <MapPin className="h-3 w-3" />
                                   {event.location}

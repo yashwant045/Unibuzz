@@ -42,6 +42,7 @@ public class Event {
     private Integer registeredCount = 0;
 
     private String facultyEmail; // who created it
+    private String facultyName;
 
     private String category;
 

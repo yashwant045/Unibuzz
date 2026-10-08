@@ -3,7 +3,7 @@ import { registerEvent, getEventRegistrations, getMyRegistrations, markAttended,
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Clock, MapPin, Users, Mail, GraduationCap, CheckCircle2, Circle, Loader2, Pencil, Trash2, AlertTriangle } from "lucide-react";
+import { CalendarDays, Clock, MapPin, Users, Mail, GraduationCap, CheckCircle2, Circle, Loader2, Pencil, Trash2, AlertTriangle, BarChart3, ArrowUpRight, ArrowRight, Bookmark } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
 
 function EventCard({ event, isPast = false, onEventUpdated }) {
@@ -11,6 +11,7 @@ function EventCard({ event, isPast = false, onEventUpdated }) {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registrations, setRegistrations] = useState([]);
@@ -242,171 +243,244 @@ function EventCard({ event, isPast = false, onEventUpdated }) {
 
   return (
     <>
-      <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-gray-200 flex flex-col h-full bg-white group rounded-2xl">
-        {/* Banner area */}
-        <div className={`h-24 relative overflow-hidden flex items-start justify-between p-3 ${isPast ? 'bg-gradient-to-br from-gray-400 to-gray-500' : 'bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600'}`}>
-          <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:bg-transparent"></div>
-          <div>
-            {event.category && (
-              <Badge className="relative z-10 bg-white/90 text-indigo-700 hover:bg-white border-none shadow-sm backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold">
-                {event.category}
-              </Badge>
-            )}
-          </div>
-          {isFaculty && (
-            <div className="relative z-10 flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpenEditModal();
-                }}
-                className="bg-white/90 hover:bg-white text-indigo-700 p-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all hover:scale-105"
-                title="Edit Event"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete();
-                }}
-                className="bg-white/90 hover:bg-red-50 text-red-600 p-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all hover:scale-105"
-                title="Delete Event"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
+      <Card className="group overflow-hidden flex flex-col h-full w-full max-w-[360px] mx-auto bg-white border border-gray-100 transition-all duration-300 rounded-[20px] relative shadow-sm hover:shadow-[0_12px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1.5 font-sans">
+        
+        {/* Top Banner (140px height) */}
+        <div className="p-2 pb-0">
+          <div className={`h-[140px] relative overflow-hidden flex-shrink-0 rounded-[16px] ${isPast ? 'bg-gradient-to-br from-gray-500 to-gray-700' : 'bg-gradient-to-br from-[#1E3A8A] to-[#7C3AED]'}`}>
+            
+            {/* Centered Graphic / Logo Placeholder */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-16 h-16 rounded-full border-[4px] border-white/20 flex items-center justify-center rotate-45 opacity-60 backdrop-blur-sm">
+                <div className="w-8 h-8 rounded-full border-[4px] border-white/40 -rotate-45" />
+              </div>
             </div>
-          )}
+            
+            {/* Top-Left Category Pill */}
+            <div className="absolute top-3 left-3">
+              {event.category && (
+                <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 shadow-sm">
+                  <span className="text-[11px] font-bold text-white tracking-wider uppercase">
+                    {event.category}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            {/* Top-Right Action Area (Bookmark / Edit / Delete) */}
+            <div className="absolute top-3 right-3 flex items-center gap-1.5">
+              {isFaculty ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenEditModal();
+                    }}
+                    className="bg-white hover:bg-gray-100 text-gray-700 h-8 w-8 rounded-full flex items-center justify-center shadow-md transition-transform hover:scale-105"
+                    title="Edit Event"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete();
+                    }}
+                    className="bg-white hover:bg-red-50 text-red-500 h-8 w-8 rounded-full flex items-center justify-center shadow-md transition-transform hover:scale-105"
+                    title="Delete Event"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="bg-white hover:bg-gray-100 text-gray-700 h-8 w-8 rounded-full flex items-center justify-center shadow-md transition-transform hover:scale-105"
+                  title="Bookmark Event"
+                >
+                  <Bookmark className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
-        <CardContent className="flex-grow flex flex-col p-5 pt-4">
-          <h2 className="text-xl font-bold text-gray-900 line-clamp-1 mb-2 group-hover:text-indigo-600 transition-colors">
-            {event.title}
-          </h2>
+        <CardContent className="flex-grow flex flex-col p-5 pt-4 relative z-20">
+          <div className="mb-3">
+            <h2 className="text-[28px] font-bold text-gray-900 line-clamp-1 tracking-tight leading-tight">
+              {event.title}
+            </h2>
+          </div>
 
           {event.description && (
-            <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">
+            <p className="text-[14px] font-medium text-gray-500 line-clamp-2 leading-relaxed mb-4">
               {event.description}
             </p>
           )}
 
-          <div className="mt-auto space-y-2">
-            <div className="flex items-center text-sm text-gray-600 gap-2">
-              <CalendarDays className="h-4 w-4 text-indigo-500 shrink-0" />
-              <span className="font-medium truncate">{formattedDate}</span>
-              {formattedTime && (
-                <span className="inline-flex items-center gap-1 text-xs text-indigo-600 font-semibold bg-indigo-50 px-2 py-0.5 rounded-md ml-auto">
-                  <Clock className="h-3 w-3" />
-                  {formattedTime}
-                </span>
-              )}
+          {/* Compact Horizontal Info Cards (Glassmorphism effect using subtle backgrounds) */}
+          <div className="flex gap-2 mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50/80 border border-blue-100 rounded-lg">
+              <CalendarDays className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-[12px] font-semibold text-gray-700 whitespace-nowrap">
+                {formattedDate}
+              </span>
             </div>
-
-            <div className="flex items-center text-sm text-gray-600 gap-2">
-              <MapPin className="h-4 w-4 text-purple-500 shrink-0" />
-              <span className="font-medium truncate">{event.location || "TBA"}</span>
-            </div>
-
-            <div className="flex items-center text-sm text-gray-600 gap-2">
-              <GraduationCap className="h-4 w-4 text-pink-500 shrink-0" />
-              <span className="font-medium truncate">{event.facultyEmail || "Faculty"}</span>
-            </div>
-            
-            <div className="pt-3 mt-1 border-t border-gray-100">
-              <div className="flex justify-between items-center mb-1.5">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                  <Users className="h-3.5 w-3.5 text-gray-400" />
-                  <span>{event.registeredCount || 0} / {event.seats || '∞'} Booked</span>
-                </div>
-                {isFull ? (
-                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
-                    Fully Booked
-                  </span>
-                ) : (event.seats && (event.seats - (event.registeredCount || 0)) <= 5) ? (
-                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
-                    🔥 Only {event.seats - (event.registeredCount || 0)} Left
-                  </span>
-                ) : (
-                  <span className="text-xs font-bold text-indigo-600">{percentageFilled}%</span>
-                )}
-              </div>
-              <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                <div 
-                  className={`h-1.5 rounded-full transition-all duration-500 ${isFull ? 'bg-rose-500' : 'bg-gradient-to-r from-indigo-500 to-purple-500'}`}
-                  style={{ width: `${percentageFilled}%` }}
-                ></div>
-              </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-fuchsia-50/80 border border-fuchsia-100 rounded-lg min-w-0">
+              <MapPin className="h-3.5 w-3.5 text-fuchsia-500 shrink-0" />
+              <span className="text-[12px] font-semibold text-gray-700 truncate">
+                {event.location || "TBA"}
+              </span>
             </div>
           </div>
-        </CardContent>
 
-        <CardFooter className="p-4 bg-gray-50 border-t border-gray-100">
-          {isStudent && (
-            <Button
-              disabled={alreadyRegistered || (isFull && !alreadyRegistered) || isRegistering}
-              onClick={handleRegister}
-              className={`w-full font-semibold tracking-wide flex items-center justify-center gap-2 ${
-                alreadyRegistered 
-                  ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border-none font-bold" 
-                  : isFull 
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed" 
-                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg active:scale-[0.98] transition-all"
-              }`}
-              variant={alreadyRegistered ? "outline" : "default"}
-            >
-              {isRegistering ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Securing Seat...
-                </>
-              ) : alreadyRegistered ? (
-                "✓ Seat Registered"
-              ) : isFull ? (
-                "Fully Booked"
-              ) : (
-                "Book Seat Now"
-              )}
-            </Button>
-          )}
-          
-          {isFaculty && (
-            <div className="w-full flex items-center gap-2">
-              <Button
-                onClick={handleViewRegistrations}
-                className="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-semibold tracking-wide shadow-md text-xs py-2"
-              >
-                Registrations
-              </Button>
-              <Button
-                onClick={handleOpenEditModal}
-                variant="outline"
-                className="px-3 border-indigo-200 text-indigo-700 hover:bg-indigo-50 text-xs font-semibold"
-                title="Edit Details"
-              >
-                <Pencil className="h-3.5 w-3.5 mr-1" />
-                Edit
-              </Button>
-              <Button
-                onClick={handleDelete}
-                variant="outline"
-                className="px-3 border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold"
-                title="Delete Event"
-              >
-                <Trash2 className="h-3.5 w-3.5 mr-1" />
-                Delete
-              </Button>
+          {/* Compact Stats Row */}
+          <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50/80 border border-gray-100 rounded-[12px] mb-5">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-emerald-500" />
+              <span className="text-[13px] font-bold text-gray-700">
+                {event.registeredCount || 0} <span className="font-medium text-gray-500 text-[12px]">Registered</span>
+              </span>
             </div>
-          )}
-          
-          {!isStudent && !isFaculty && (
-            <Button disabled variant="outline" className="w-full">
-              Login to Register
-            </Button>
-          )}
-        </CardFooter>
+            <div className="w-px h-5 bg-gray-200"></div>
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-purple-500" />
+              <span className="text-[13px] font-bold text-gray-700">
+                {event.seats || '∞'} <span className="font-medium text-gray-500 text-[12px]">Seats</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Buttons Area (48px height, 48% width each) */}
+          <div className="flex items-center justify-between gap-3 mt-auto">
+            <button
+              onClick={() => setShowDetailsModal(true)}
+              className="w-1/2 h-[48px] rounded-[12px] border-2 border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 text-gray-800 text-[14px] font-bold transition-all duration-300 flex items-center justify-center gap-1.5 group/btn hover:scale-[1.03]"
+            >
+              Details <ArrowUpRight className="h-4 w-4 text-gray-500 group-hover/btn:text-gray-800 transition-colors" />
+            </button>
+
+            {isStudent && (
+              <button
+                disabled={alreadyRegistered || (isFull && !alreadyRegistered) || isRegistering}
+                onClick={handleRegister}
+                className={`w-1/2 h-[48px] rounded-[12px] text-[14px] font-bold transition-all duration-300 flex items-center justify-center gap-1.5 hover:scale-[1.03] shadow-sm ${
+                  alreadyRegistered
+                    ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/25"
+                    : isFull
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none hover:scale-100"
+                      : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/25"
+                }`}
+              >
+                {isRegistering ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> ...</>
+                ) : alreadyRegistered ? (
+                  <><CheckCircle2 className="h-4 w-4" /> Registered</>
+                ) : isFull ? (
+                  "Full"
+                ) : (
+                  <>Register <ArrowRight className="h-4 w-4" /></>
+                )}
+              </button>
+            )}
+
+            {isFaculty && (
+              <button
+                onClick={handleViewRegistrations}
+                className="w-1/2 h-[48px] rounded-[12px] bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm shadow-blue-500/25 text-[14px] font-bold transition-all duration-300 flex items-center justify-center gap-1.5 hover:scale-[1.03]"
+              >
+                View <ArrowRight className="h-4 w-4" />
+              </button>
+            )}
+
+            {!isStudent && !isFaculty && (
+              <button disabled className="w-1/2 h-[48px] rounded-[12px] border border-gray-200 bg-gray-50 text-gray-400 text-[14px] font-bold cursor-not-allowed">
+                Login
+              </button>
+            )}
+          </div>
+        </CardContent>
       </Card>
+
+      {/* ── View Details Modal ── */}
+      {showDetailsModal && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-200"
+          style={{ backgroundColor: "rgba(15, 31, 61, 0.6)" }}
+          onClick={() => setShowDetailsModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-md p-0 overflow-hidden shadow-2xl border border-gray-100 animate-in zoom-in-95 fade-in duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-start gap-4 mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">{event.title}</h2>
+                <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 hover:text-gray-600 bg-gray-50 rounded-full p-1.5 border border-gray-200">
+                  ✕
+                </button>
+              </div>
+              
+              <div className="flex gap-2 mb-6">
+                {event.category && (
+                  <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                    {event.category}
+                  </span>
+                )}
+                <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${isPast ? 'bg-gray-100 text-gray-500 border-gray-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
+                  {isPast ? 'Past' : 'Upcoming'}
+                </span>
+              </div>
+
+              <p className="text-gray-600 text-sm leading-relaxed mb-8">{event.description}</p>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-50 p-2 rounded-lg border border-gray-200"><CalendarDays className="h-5 w-5 text-indigo-500" /></div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Date & Time</p>
+                    <p className="text-gray-900 text-sm font-medium">{formattedDate} {formattedTime && `• ${formattedTime}`}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-50 p-2 rounded-lg border border-gray-200"><MapPin className="h-5 w-5 text-purple-500" /></div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Location</p>
+                    <p className="text-gray-900 text-sm font-medium">{event.location || "TBA"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-50 p-2 rounded-lg border border-gray-200"><Users className="h-5 w-5 text-emerald-500" /></div>
+                  <div className="w-full pr-4">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold flex justify-between">
+                      <span>Availability</span>
+                      <span className="text-emerald-600">{event.registeredCount || 0} / {event.seats || '∞'} Registered</span>
+                    </p>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 overflow-hidden">
+                      <div className="h-1.5 rounded-full bg-emerald-500" style={{ width: `${percentageFilled}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-50 p-2 rounded-lg border border-gray-200"><GraduationCap className="h-5 w-5 text-pink-500" /></div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Faculty Name</p>
+                    <p className="text-gray-900 text-sm font-medium">{event.facultyName || event.facultyEmail}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+              <button onClick={() => setShowDetailsModal(false)} className="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 bg-white text-sm font-semibold hover:bg-gray-100 transition-colors shadow-sm">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Edit Event Modal ── */}
       {showEditModal && (

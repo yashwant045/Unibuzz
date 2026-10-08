@@ -10,7 +10,9 @@ import {
   Loader2,
   Edit,
   CalendarDays,
-  CheckCircle2
+  CheckCircle2,
+  Clock,
+  LogOut
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -77,6 +79,11 @@ export default function FacultyProfile() {
     }
   };
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
@@ -93,6 +100,17 @@ export default function FacultyProfile() {
   const recentEvents = [...events].sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate)).slice(0, 3);
   const today = new Date();
   today.setHours(0,0,0,0);
+
+  const formatTimeAMPM = (timeStr) => {
+    if (!timeStr) return "";
+    if (timeStr.toUpperCase().includes("AM") || timeStr.toUpperCase().includes("PM")) return timeStr;
+    const [hourStr, minuteStr] = timeStr.split(":");
+    if (!hourStr || !minuteStr) return timeStr;
+    let hour = parseInt(hourStr, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return `${hour}:${minuteStr} ${ampm}`;
+  };
 
   const getInitials = (name) => {
     if (!name) return "F";
@@ -157,10 +175,15 @@ export default function FacultyProfile() {
 
               <Button 
                 onClick={handleEditClick}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 mb-3"
               >
                 <Edit className="h-4 w-4" />
                 Edit Profile
+              </Button>
+              
+              <Button variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 flex items-center justify-center gap-2" onClick={logout}>
+                <LogOut className="h-4 w-4" />
+                Sign Out
               </Button>
             </CardContent>
           </Card>
@@ -235,6 +258,12 @@ export default function FacultyProfile() {
                                 <Calendar className="h-3 w-3" />
                                 {Array.isArray(event.eventDate) ? `${event.eventDate[0]}-${String(event.eventDate[1]).padStart(2, '0')}-${String(event.eventDate[2]).padStart(2, '0')}` : event.eventDate}
                               </span>
+                              {event.eventTime && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {formatTimeAMPM(event.eventTime)}
+                                </span>
+                              )}
                               <span className="flex items-center gap-1">
                                 <MapPin className="h-3 w-3" />
                                 {event.location}

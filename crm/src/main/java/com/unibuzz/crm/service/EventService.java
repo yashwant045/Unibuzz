@@ -98,6 +98,11 @@ public class EventService {
     public Event createEvent(Event event, String facultyEmail) {
         validateEventDateTime(event.getEventDate(), event.getEventTime());
         event.setFacultyEmail(facultyEmail);
+        
+        userRepository.findByEmail(facultyEmail).ifPresent(faculty -> {
+            event.setFacultyName(faculty.getFullName());
+        });
+
         Event savedEvent = eventRepository.save(event);
 
         String formattedTime = formatTime12Hour(savedEvent.getEventTime());

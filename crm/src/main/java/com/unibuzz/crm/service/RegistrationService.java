@@ -4,6 +4,8 @@ import com.unibuzz.crm.entity.Event;
 import com.unibuzz.crm.entity.Registration;
 import com.unibuzz.crm.repository.EventRepository;
 import com.unibuzz.crm.repository.RegistrationRepository;
+import com.unibuzz.crm.repository.UserRepository;
+import com.unibuzz.crm.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ public class RegistrationService {
 
     private final RegistrationRepository registrationRepository;
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public void register(String email, Long eventId) {
@@ -33,8 +36,13 @@ public class RegistrationService {
             throw new RuntimeException("Event is fully booked! No seats available.");
         }
 
+        String studentName = userRepository.findByEmail(email)
+                .map(User::getFullName)
+                .orElse(email);
+
         Registration reg = Registration.builder()
                 .studentEmail(email)
+                .studentName(studentName)
                 .eventId(eventId)
                 .build();
 

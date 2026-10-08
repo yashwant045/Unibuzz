@@ -7,7 +7,7 @@ export default function DashboardLayout() {
     <div>
       <DashboardNavbar />
 
-      <div className="bg-gray-100 min-h-screen p-10">
+      <div className="bg-gray-100 min-h-screen pt-20 p-10">
         <Outlet />
       </div>
     </div>

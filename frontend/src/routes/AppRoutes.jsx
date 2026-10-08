@@ -16,13 +16,17 @@ import StudentDashboard from "@/pages/student/StudentDashboard";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 
+import Chatbot from "@/components/chat/Chatbot";
+
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+      <Chatbot />
       <Routes>
 
         {/* Public */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Events />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/events" element={<Events />} />
 

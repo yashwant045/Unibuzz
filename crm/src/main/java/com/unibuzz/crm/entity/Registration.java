@@ -34,6 +34,9 @@ public class Registration {
     @Column(name = "student_email", nullable = false)
     private String studentEmail;
 
+    @Column(name = "student_name")
+    private String studentName;
+
     @Column(name = "event_id", nullable = false)
     private Long eventId;
 

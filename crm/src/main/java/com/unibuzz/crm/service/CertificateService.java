@@ -49,9 +49,12 @@ public class CertificateService {
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         // 5. Load student name (fallback to email)
-        String studentName = userRepository.findByEmail(reg.getStudentEmail())
-                .map(User::getFullName)
-                .orElse(reg.getStudentEmail());
+        String studentName = reg.getStudentName();
+        if (studentName == null || studentName.isBlank()) {
+            studentName = userRepository.findByEmail(reg.getStudentEmail())
+                    .map(User::getFullName)
+                    .orElse(reg.getStudentEmail());
+        }
 
         String eventTitle = event.getTitle() != null ? event.getTitle() : "N/A";
         String eventDate = event.getEventDate() != null
